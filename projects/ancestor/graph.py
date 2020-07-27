@@ -5,6 +5,7 @@ from util import Stack, Queue  # These may come in handy
 import random
 import sys 
 sys.setrecursionlimit(10**6) 
+
 class Graph:
 
     """Represent a graph as a dictionary of vertices mapping labels to edges."""
@@ -19,11 +20,17 @@ class Graph:
             return 
         
         self.vertices[vertex_id] = set()
+    
+    def get_vertices(self):
+        return self.vertices
 
     def add_edge(self, v1, v2):
         """
         Add a directed edge to the graph.
         """
+        if v1 not in self.vertices or v2 not in self.vertices:
+            return
+
         self.vertices[v1].add(v2)
 
     def get_neighbors(self, vertex_id):
@@ -206,27 +213,54 @@ class Graph:
         depth-first order.
         This should be done using recursion.
         """
-        # create a list to handle the path 
-        # and insert the starting vertex
         visited = [starting_vertex]
         path = []
         new_path = path + visited
-
-        # if we have reached our destination...
         if starting_vertex == destination_vertex:
             return [destination_vertex]
-        # grab the neighbors
-        neighbors = self.get_neighbors(starting_vertex)
-        # for each neighbor...
-        for n in neighbors:
-            # create a new path based on each neignbor and the destination_vertex...
-            # once resolved will return a list from start to end vertex if no errors 
-            new_path = self.dfs_recursive(n, destination_vertex)
-        
-        # once we finish recursing if new path in fact exists
-        # we have found a path and need to return it
+        for neighbor in self.get_neighbors(starting_vertex):
+            new_path = self.dfs_recursive(neighbor, destination_vertex)
         if new_path:    
             return new_path
+    # def dfs_recursive(self, starting_vertex, destination_vertex, visited=None, path=None, s=None):
+    #     """
+    #     Return a list containing a path from
+    #     starting_vertex to destination_vertex in
+    #     depth-first order.
+
+    #     This should be done using recursion.
+    #     """
+
+    #     if visited == None:
+    #         visited = set()
+    #     if path == None:
+    #         path = [starting_vertex]
+    #     if s == None:
+    #         s = Stack()
+
+    #     s.push(path)
+    #     # base case: have we reached our destination
+    #     if starting_vertex == destination_vertex:
+    #         # if so return the constructed path
+    #         print(f"reached the end...\t\t {path}")
+    #         # cur_path = s.pop()
+    #         return path
+    #     # check to see if we have been visited
+    #     if starting_vertex not in visited:
+    #         cur_path = s.pop()
+    #         print(cur_path)
+    #         cur_node = cur_path[-1]
+    #         visited.add(cur_node)
+    #         neighbors = self.get_neighbors(cur_node)
+
+    #         for n in neighbors:
+    #             n_path = cur_path.copy()
+    #             n_path.append(n)
+
+    #             self.dfs_recursive(n, destination_vertex, visited, n_path, s)
+
+    #     # return path
+    #     # if we do have neighbors... iterate over them and recurse for each one
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
