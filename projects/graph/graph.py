@@ -198,36 +198,53 @@ class Graph:
                     n_path.append(n)
                     # add the path back to the stack
                     s.push(n_path)
-        pass  # TODO
-    def dfs_recursive(self, starting_vertex, destination_vertex):
+
+    def dfs_recursive(self, starting_vertex, destination_vertex, dfs_path=Stack(), visited=None):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
         depth-first order.
         This should be done using recursion.
         """
-        # create a list to handle the path 
-        # and insert the starting vertex
-        visited = [starting_vertex]
-        path = []
-        new_path = path + visited
+        # create a set to handle the visited... this will be recuresed with
+        visited = set()
+        # grab the current path
+        cur_path = dfs_path.pop()
+        # if the path happens to not exists, for example first pass
+        if cur_path == None:
+            # start the path with the starting vertex
+            cur_path = [starting_vertex]
 
-        # if we have reached our destination...
-        if starting_vertex == destination_vertex:
-            return [destination_vertex]
-        # grab the neighbors
-        neighbors = self.get_neighbors(starting_vertex)
-        # for each neighbor...
-        for n in neighbors:
-            # create a new path based on each neignbor and the destination_vertex...
-            # once resolved will return a list from start to end vertex if no errors 
-            new_path = self.dfs_recursive(n, destination_vertex)
+        # grab the current node we are looking at from the path
+        cur_node = cur_path[-1] 
+
+        # if the last item in the path is not visited
+        if  cur_node not in visited:
+            # set the current node as "visited"
+            visited.add(cur_node)
+
+            # find all neighbors of the current node
+            neighbors = self.get_neighbors(cur_node)
+            
+            # for each neighbor
+            for n in neighbors:
+                # if the current neighbor is our destination vertex
+                if n == destination_vertex:
+                    # add it to the current path
+                    cur_path.append(n)
+                    # and return the whole path.. we are done
+                    return cur_path
+
+                # else we need to copy our list
+                cur_copy = cur_path.copy()
+                # add our neighbors to it
+                cur_copy.append(n)
+                # and send it off to be checked again...
+                dfs_path.push(cur_copy)
         
-        # once we finish recursing if new path in fact exists
-        # we have found a path and need to return it
-        if new_path:    
-            return new_path
-
+        # check again
+        return self.dfs_recursive(starting_vertex, destination_vertex, dfs_path, visited)
+        
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
     # https://github.com/LambdaSchool/Graphs/blob/master/objectives/breadth-first-search/img/bfs-visit-order.png
